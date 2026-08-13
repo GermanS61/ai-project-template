@@ -2,6 +2,10 @@ name: Technical Proposal
 description: Предложить архитектурное улучшение, refactor или техническое изменение
 title: "[Proposal]: "
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposal не является разрешением на реализацию. После отправки владелец проекта проведёт triage и назначит статус в GitHub Project.
   - type: textarea
     id: context
     attributes:
@@ -36,12 +40,10 @@ body:
     id: risks
     attributes:
       label: Риски / стоимость сопровождения
-  - type: dropdown
-    id: decision
+  - type: textarea
+    id: decision_question
     attributes:
-      label: Требуемый следующий шаг
-      options:
-        - needs-review
-        - needs-research
+      label: Решение, которое нужно принять
+      description: Что именно должен решить владелец проекта по итогам рассмотрения?
     validations:
       required: true

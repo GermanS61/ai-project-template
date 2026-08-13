@@ -1,9 +1,11 @@
 name: Bug Report
 description: Сообщить о воспроизводимой ошибке
 title: "[Bug]: "
-labels:
-  - bug
 body:
+  - type: markdown
+    attributes:
+      value: |
+        После отправки владелец проекта проведёт triage, назначит классификацию и статус в GitHub Project.
   - type: textarea
     id: observed
     attributes:

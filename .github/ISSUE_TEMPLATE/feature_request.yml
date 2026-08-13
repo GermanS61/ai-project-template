@@ -1,13 +1,11 @@
 name: Feature Request
 description: Предложить новый пользовательский или продуктовый функционал
 title: "[Feature]: "
-labels:
-  - enhancement
 body:
   - type: markdown
     attributes:
       value: |
-        Идея не является разрешением на разработку. Сначала она должна пройти оценку и получить решение.
+        Идея не является разрешением на разработку. После отправки владелец проекта проведёт triage и назначит статус в GitHub Project.
   - type: textarea
     id: problem
     attributes:
@@ -44,12 +42,3 @@ body:
     attributes:
       label: Предварительное техническое влияние
       description: Модули, API, данные, интеграции, риски — если уже известно.
-  - type: dropdown
-    id: initial_status
-    attributes:
-      label: Начальный статус
-      options:
-        - idea
-        - needs-review
-    validations:
-      required: true

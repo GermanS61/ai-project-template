@@ -43,7 +43,7 @@
 
 - TBD
 
-> После инициализации существенные идеи должны быть перенесены в отдельные GitHub Feature Requests.
+> После инициализации существенные идеи должны быть подготовлены как отдельные GitHub Feature Requests. После разрешённой публикации оставьте здесь только ссылки; канонический workflow хранится в Project `Status`, а не дублируется в этом файле.
 
 ## 4. Пользователи и роли
 
@@ -90,6 +90,8 @@
 
 ## 9. Existing Environment
 
+Указывайте только безопасные aliases и категории. Реальные credentials, секреты, чувствительные внутренние адреса и способы доступа храните в системе с подходящим контролем доступа, а здесь оставляйте ссылку или идентификатор без секрета.
+
 ```text
 Servers: TBD
 Databases: TBD
@@ -102,11 +104,13 @@ External Services: TBD
 
 ## 10. External Integrations
 
-| Система | Назначение | Интерфейс | Статус |
+| Система | Назначение | Интерфейс | Решение / Issue |
 |---|---|---|---|
-| TBD | TBD | API/Webhook/Event/etc | idea |
+| TBD | TBD | API/Webhook/Event/etc | Confirmed / N/A / #Issue |
 
 ## 11. Data
+
+Не перечисляйте реальные sensitive values или персональные данные. Фиксируйте классы данных, требования и ссылку на контролируемую документацию.
 
 **Основные сущности:** TBD  
 **Источники:** TBD  
@@ -127,9 +131,15 @@ Runtime/Hosting: TBD
 Other constraints: TBD
 ```
 
-## 13. Standalone Mode
+## 13. Operating Modes
 
-Как проект должен работать самостоятельно:
+Выбирайте только режимы, подтверждённые реальным use case. Для неприменимого режима укажите `N/A` и причину.
+
+### Standalone Mode
+
+**Статус:** required / N/A / TBD
+
+**Подтверждённый сценарий или причина `N/A`:** TBD
 
 ```text
 Startup: TBD
@@ -139,9 +149,11 @@ Auth: TBD
 External interfaces: TBD
 ```
 
-## 14. Embedded / Integration Mode
+### Embedded / Integration Mode
 
-Как проект потенциально может стать компонентом большей системы:
+**Статус:** required / N/A / TBD
+
+**Подтверждённый сценарий или причина `N/A`:** TBD
 
 ```text
 Integration contract: TBD
@@ -150,32 +162,28 @@ Configuration: TBD
 Data exchange: TBD
 ```
 
-## 15. Extension Points
+## 14. Extension Points
 
-Вероятные точки расширения, которые стоит учитывать, но не обязательно реализовывать заранее:
+Фиксируйте только расширения, для которых есть утверждённый сценарий. Если их нет: `N/A — подтверждённых extension points нет`. Не создавайте providers, adapters или plugin API «на будущее».
 
-- Providers: TBD
-- Adapters: TBD
-- Plugins: TBD
-- Integrations: TBD
-- Storage: TBD
+**Статус:** required / N/A / TBD
 
-## 16. Working Skeleton
+**Подтверждённый сценарий или причина `N/A`:** TBD
+
+**Необходимые точки расширения и требования совместимости:** TBD
+
+## 15. Working Skeleton
 
 Опишите минимальный end-to-end путь, который должен заработать раньше сложной функциональности.
 
 ```text
-Input
+Input / Trigger
 ↓
-Interface/API
+Minimal Implementation Path
 ↓
-Application
+Required State or Integration (if any)
 ↓
-Core
-↓
-Storage/External Adapter
-↓
-Result
+Observable Result
 ```
 
 ### Skeleton Acceptance Criteria
@@ -184,11 +192,14 @@ Result
 - [ ] конфигурация работает;
 - [ ] главный end-to-end сценарий проходит;
 - [ ] базовые ошибки обрабатываются;
-- [ ] есть logging;
+- [ ] есть минимальная воспроизводимая автоматическая или ручная проверка;
+- [ ] применены базовые security controls и не раскрываются секреты;
+- [ ] есть диагностические логи без чувствительных данных;
 - [ ] есть smoke/health check;
+- [ ] изменения данных безопасны и проверены; backup/recovery описаны либо обоснованно `N/A`;
 - [ ] есть инструкция запуска.
 
-## 17. MVP
+## 16. MVP
 
 ### Обязательно
 
@@ -202,14 +213,14 @@ Result
 
 - TBD
 
-## 18. Deployment
+## 17. Deployment
 
 **Environment:** TBD  
 **Deployment method:** TBD  
 **Rollback:** TBD  
 **Backup:** TBD
 
-## 19. Testing Expectations
+## 18. Testing Expectations
 
 **Unit:** TBD  
 **Integration:** TBD  
@@ -217,42 +228,43 @@ Result
 **Smoke:** TBD  
 **Manual verification:** TBD
 
-## 20. Observability
+## 19. Observability
 
 **Logs:** TBD  
 **Metrics:** TBD  
 **Health checks:** TBD  
 **Alerts:** TBD
 
-## 21. Known Risks
+## 20. Known Risks
 
 | Риск | Вероятность | Влияние | План |
 |---|---|---|---|
 | TBD | TBD | TBD | TBD |
 
-## 22. Open Questions
+## 21. Open Questions
 
 1. TBD
 2. TBD
 
 Не блокирующие вопросы не должны мешать созданию Working Skeleton.
 
-## 23. Definition of Project Success
+## 22. Definition of Project Success
 
 - TBD
 
-## 24. Что должен сделать агент после bootstrap
+## 23. Что должен сделать агент после bootstrap
 
 После анализа этого файла агент должен:
 
 1. выявить существенные противоречия и критические пробелы;
 2. зафиксировать разумные допущения;
 3. определить MVP и Working Skeleton;
-4. предложить архитектурные границы и основные модули;
-5. определить integration contracts;
-6. разбить реализацию на этапы;
-7. обновить `ARCHITECTURE.md`, `PROJECT_PLAN.md` и `ROADMAP.md`;
-8. сформировать первоначальный backlog;
-9. отделить утверждённый scope от будущих идей;
-10. создать необходимые ADR;
-11. только после этого начать реализацию Stage 0 / Working Skeleton.
+4. выбрать только подтверждённые режимы работы и архитектурные границы; остальные пометить `N/A` с причиной;
+5. определить контракты только для реально требуемых интеграций и расширений;
+6. персонализировать `README.md` и `SECURITY.md`, включая команды, конфигурацию и приватный канал для сообщений об уязвимостях;
+7. разбить реализацию на этапы с базовыми требованиями к проверке, безопасности, наблюдаемости и сохранности данных; при адаптации этапов синхронизировать варианты Stage в `.github/ISSUE_TEMPLATE/implementation_task.yml` и поле `Stage` GitHub Project;
+8. обновить `ARCHITECTURE.md`, `PROJECT_PLAN.md` и `ROADMAP.md`;
+9. сформировать первоначальный backlog;
+10. отделить утверждённый scope от будущих идей;
+11. создать необходимые ADR;
+12. завершить Stage 0 — Architecture / Bootstrap и только затем начать Stage 1 — Working Skeleton.

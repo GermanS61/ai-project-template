@@ -49,6 +49,6 @@ Architecture Risk: 1–5 / TBD
 
 ## Decision
 
-`idea / needs-review / approved / planned / deferred / rejected / needs-research`
+GitHub Project `Status`: `Triage / Needs Research / Ready / Deferred / Rejected`
 
 **Reason:** TBD

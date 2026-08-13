@@ -36,7 +36,7 @@ chore: add env example
 Перед PR:
 
 - проверьте diff/status;
-- удалите scratch/debug-файлы;
+- исключите собственные scratch/debug-файлы из PR; не удаляйте неизвестные или чужие файлы без подтверждения владельца;
 - запустите релевантные tests/lint/typecheck/pre-commit;
 - выполните smoke-test при необходимости;
 - обновите документацию;
@@ -47,6 +47,8 @@ chore: add env example
 Не исправляйте несвязанные проблемы в текущем PR. Создайте отдельный Issue.
 
 Не реализуйте Feature Request только потому, что он существует. Он должен быть утверждён или явно включён в текущую задачу.
+
+Создание или изменение GitHub Issues/PR и других внешних сущностей требует явного разрешения текущей задачи. При read-only запросе подготовьте черновик вместо публикации.
 
 ## Review
 
@@ -61,4 +63,4 @@ chore: add env example
 - безопасность и секреты;
 - отсутствие scope creep.
 
-Подробный checklist: `docs/review-checklist.md`.
+Подробный checklist: [docs/review-checklist.md](docs/review-checklist.md).

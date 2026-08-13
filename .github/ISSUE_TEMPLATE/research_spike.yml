@@ -1,9 +1,11 @@
 name: Research / Spike
 description: Исследование перед архитектурным или продуктовым решением
 title: "[Research]: "
-labels:
-  - question
 body:
+  - type: markdown
+    attributes:
+      value: |
+        После отправки владелец проекта проведёт triage, назначит классификацию и статус в GitHub Project.
   - type: textarea
     id: question
     attributes:

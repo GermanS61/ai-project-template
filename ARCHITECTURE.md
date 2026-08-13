@@ -17,18 +17,14 @@
 ```text
 [User/System]
       ↓
-[Interface]
+[Entry Point]
       ↓
-[Application]
+[Application / Core]
       ↓
-[Core / Domain]
-      ↓
-[Ports / Contracts]
-      ↓
-[Adapters / Infrastructure]
+[Required Storage or Integration (if any)]
 ```
 
-Диаграмма является примером и должна быть адаптирована к реальному проекту.
+Диаграмма является примером и должна быть адаптирована к реальному проекту. Не добавляйте слои, порты или адаптеры без подтверждённой необходимости.
 
 ## 4. Components / Modules
 
@@ -38,7 +34,7 @@
 
 ## 5. Core Contracts
 
-Для каждого важного контракта фиксируйте:
+Для каждого важного подтверждённого контракта фиксируйте поля ниже. Если отдельных контрактов не требуется, укажите `N/A` с причиной.
 
 ```text
 Name:
@@ -55,40 +51,52 @@ TBD
 
 ## 7. External Integrations
 
+Опишите только утверждённые интеграции. Если их нет: `N/A — внешние интеграции не входят в принятый scope`.
+
+## 8. Operating Modes
+
+Режим включается в архитектуру только при наличии подтверждённого use case. Иначе укажите `N/A` и причину.
+
+### Standalone Mode
+
+**Статус:** required / N/A / TBD
+
+**Use case или причина `N/A`:** TBD
+
+**Запуск, конфигурация и границы:** TBD
+
+### Embedded / Integration Mode
+
+**Статус:** required / N/A / TBD
+
+**Use case или причина `N/A`:** TBD
+
+**Контракт, lifecycle и обмен данными:** TBD
+
+## 9. Extension Points
+
+Только утверждённые providers, adapters, plugins или другие точки расширения: TBD / N/A. Не создавать extension API для гипотетического будущего.
+
+## 10. Configuration
+
 TBD
 
-## 8. Standalone Mode
+## 11. Security Boundaries
 
-Как система запускается и работает независимо: TBD.
+Границы доверия, authentication/authorization, secrets и чувствительные данные: TBD.
 
-## 9. Embedded / Integration Mode
+## 12. Observability
 
-Как система может быть встроена в большую систему: TBD.
+Логи, health checks, метрики и диагностические данные без раскрытия чувствительной информации: TBD.
 
-## 10. Extension Points
+## 13. Data Safety / Failure Recovery
 
-Реальные ожидаемые точки расширения: TBD.
+Отказы, целостность данных, безопасные миграции, rollback и backup/recovery: TBD / N/A с причиной.
 
-## 11. Configuration
+## 14. Architecture Decisions
 
-TBD
+См. [docs/decisions/](docs/decisions/).
 
-## 12. Security Boundaries
-
-TBD
-
-## 13. Observability
-
-TBD
-
-## 14. Failure Modes / Recovery
-
-TBD
-
-## 15. Architecture Decisions
-
-См. `docs/decisions/`.
-
-## 16. Known Architectural Debt
+## 15. Known Architectural Debt
 
 - None / TBD

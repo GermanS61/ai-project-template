@@ -17,3 +17,5 @@ Escalation
 ```
 
 Не помещайте реальные secrets в runbook.
+
+Используйте [RUNBOOK-TEMPLATE.md](RUNBOOK-TEMPLATE.md) как заготовку и адаптируйте команды к платформе и способу развёртывания проекта.

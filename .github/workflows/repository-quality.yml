@@ -1,0 +1,43 @@
+name: Repository quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-quality:
+    name: Repository structure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Validate Issue Forms
+        run: ruby .github/scripts/validate_issue_forms.rb
+
+      - name: Check internal Markdown links
+        run: python3 .github/scripts/check_markdown_links.py
+
+      - name: Check EOF and trailing whitespace
+        run: python3 .github/scripts/check_text_files.py
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Scan for secrets
+        run: python3 .github/scripts/check_secrets.py

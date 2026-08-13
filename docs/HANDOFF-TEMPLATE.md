@@ -24,7 +24,7 @@
 
 ## Open Work
 
-Незавершённые implementation Issues.
+Незавершённые Implementation Tasks и их Project `Status`.
 
 ## Known Problems / Risks
 
