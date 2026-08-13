@@ -1,0 +1,39 @@
+name: Research / Spike
+description: Исследование перед архитектурным или продуктовым решением
+title: "[Research]: "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Вопрос
+      description: Какое решение невозможно принять без дополнительной информации?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Зачем исследовать
+      description: Какое решение зависит от результата?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope исследования
+      description: Что проверить и что сознательно не исследовать.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Ожидаемый результат
+      description: Сравнение, prototype, benchmark, recommendation, ADR draft и т.п.
+    validations:
+      required: true
+  - type: textarea
+    id: stop
+    attributes:
+      label: Stop criteria
+      description: Когда информации достаточно для решения?

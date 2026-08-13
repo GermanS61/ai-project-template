@@ -1,0 +1,47 @@
+name: Technical Proposal
+description: Предложить архитектурное улучшение, refactor или техническое изменение
+title: "[Proposal]: "
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Контекст / проблема
+      description: Какое техническое ограничение или риск существует сейчас?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Предлагаемое решение
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Польза
+      description: Что улучшится измеримо или практически?
+  - type: textarea
+    id: impact
+    attributes:
+      label: Architecture Impact
+      description: Contracts, dependencies, data, migrations, compatibility.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Альтернативы
+      description: Включая вариант ничего не менять.
+  - type: textarea
+    id: risks
+    attributes:
+      label: Риски / стоимость сопровождения
+  - type: dropdown
+    id: decision
+    attributes:
+      label: Требуемый следующий шаг
+      options:
+        - needs-review
+        - needs-research
+    validations:
+      required: true
