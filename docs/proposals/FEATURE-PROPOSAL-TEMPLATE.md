@@ -39,12 +39,12 @@
 ## Evaluation
 
 ```text
-User Value:        1–5 / TBD
-Expected Demand:   1–5 / TBD
-Strategic Fit:     1–5 / TBD
-Implementation:    1–5 / TBD
-Maintenance Cost:  1–5 / TBD
-Architecture Risk: 1–5 / TBD
+User Value:          1–5 / TBD
+Expected Demand:     1–5 / TBD
+Strategic Fit:       1–5 / TBD
+Implementation Cost: 1–5 / TBD
+Maintenance Cost:    1–5 / TBD
+Architecture Risk:   1–5 / TBD
 ```
 
 ## Decision

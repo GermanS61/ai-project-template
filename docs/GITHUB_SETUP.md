@@ -79,13 +79,15 @@ Triage → Ready → In Progress → In Review → Done
 
 ```text
 Stage
-Complexity
+Implementation Cost
 User Value
 Expected Demand
 Architecture Risk
 Owner
 Target Release
 ```
+
+Полный набор из шести факторов оценки (`User Value`, `Expected Demand`, `Strategic Fit`, `Implementation Cost`, `Maintenance Cost`, `Architecture Risk`) хранится в тексте Issue или proposal по [docs/feature-evaluation.md](feature-evaluation.md). Поля Project из списка выше — только опциональные зеркала для фильтрации и планирования, а не второй источник истины; создавайте лишь те из них, которые действительно нужны. Если фактор отражён в Project, используйте то же имя, что и в Issue.
 
 Сделайте `Stage` single-select полем со значениями из `PROJECT_PLAN.md`. Для `Implementation Task` оно должно совпадать со Stage, выбранным в Issue Form; при последующем переносе задачи текущим значением считается поле Project. Не дублируйте `Priority` и `Area` полями Project, если они уже представлены labels.
 

@@ -8,7 +8,7 @@
 
 - **Skeleton First** — сначала минимальный рабочий каркас, затем функциональные модули.
 - **Incremental Delivery** — Stage 0 завершается валидированным проектным контуром, а начиная со Stage 1 после каждого этапа проект остаётся работоспособным.
-- **Fit-for-purpose Architecture** — standalone, embedded mode и extension points добавляются только при наличии подтверждённого сценария.
+- **Fit-for-purpose Architecture** — ядро, если оно есть, не зависит от способа запуска, runtime-конфигурация приходит извне, а внешние системы вызываются через явную границу; embedded mode и extension points добавляются только при наличии подтверждённого сценария.
 - **GitHub as Source of Truth** — код, решения, документация, backlog и история развития живут в репозитории.
 - **Idea != Task** — идея будущей функции не является разрешением на её реализацию.
 - **Reviewability** — изменения должны быть понятны человеку, который не участвовал в их написании.
@@ -53,7 +53,7 @@ Ready / Needs Research / Deferred / Rejected
       ↓
 Roadmap / Milestone (для Ready)
       ↓
-Implementation Task → Status: Ready
+Implementation Task → Status: Triage → Ready (после ручной проверки ответственным)
       ↓
 In Progress → PR → In Review → Done
 ```

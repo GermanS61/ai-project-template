@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import math
 import os
@@ -11,6 +12,7 @@ import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -118,6 +120,83 @@ SAFE_VALUES = {
     "your_token",
     "your_token_here",
 }
+ENV_REFERENCE_RE = re.compile(r"^\$\{[A-Za-z_][A-Za-z0-9_]*\}$")
+ANGLE_VALUE_RE = re.compile(r"^<(?P<inner>[^<>\r\n]+)>$")
+PLACEHOLDER_SEGMENTS = {
+    "anthropic",
+    "api",
+    "aws",
+    "change",
+    "credential",
+    "credentials",
+    "dummy",
+    "example",
+    "fake",
+    "github",
+    "gitlab",
+    "goes",
+    "google",
+    "here",
+    "in",
+    "insert",
+    "key",
+    "me",
+    "npm",
+    "openai",
+    "password",
+    "passwd",
+    "placeholder",
+    "production",
+    "pypi",
+    "redacted",
+    "replace",
+    "sample",
+    "secret",
+    "sendgrid",
+    "service",
+    "slack",
+    "stripe",
+    "test",
+    "token",
+    "value",
+    "with",
+    "xxx",
+    "your",
+}
+PLACEHOLDER_MARKERS = {
+    "change",
+    "dummy",
+    "example",
+    "fake",
+    "here",
+    "insert",
+    "placeholder",
+    "redacted",
+    "replace",
+    "sample",
+    "test",
+    "xxx",
+    "your",
+}
+ANGLE_PLACEHOLDER_MARKERS = PLACEHOLDER_MARKERS | {
+    "credential",
+    "credentials",
+    "key",
+    "password",
+    "secret",
+    "token",
+}
+SIGNATURE_PREFIX_RE = re.compile(
+    r"(?i)^(?:gh[pousr]_|github_pat_|(?:AKIA|ASIA)|AIza|glpat-|npm_|"
+    r"sk-(?:ant-|proj-|svcacct-)?|pypi-|SG\.|xox[baprs]-|(?:sk|rk)_live_)"
+)
+HEX_SECRET_RE = re.compile(r"(?i)^[0-9a-f]{32,}$")
+DEMO_LOCAL_CREDENTIALS = {
+    ("demo", "demo"),
+    ("test", "test"),
+    ("user", "password"),
+    ("username", "password"),
+}
 
 
 def repository_files() -> list[Path]:
@@ -165,6 +244,49 @@ def event_revision_range() -> str | None:
         return after
 
     return None
+
+
+def git_object_type(object_id: str) -> str | None:
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "cat-file",
+            "--batch-check=%(objectname) %(objecttype)",
+        ],
+        input=f"{object_id}\n".encode("ascii"),
+        check=True,
+        capture_output=True,
+    )
+    fields = result.stdout.decode("ascii", errors="strict").strip().split()
+    if len(fields) == 2 and fields[0] == object_id and fields[1] == "missing":
+        return None
+    if len(fields) != 2:
+        raise RuntimeError(f"unexpected git cat-file output for {object_id!r}")
+    return fields[1]
+
+
+def available_history_range(revision_range: str) -> str:
+    """Fall back to reachable push history only when its before object is absent."""
+    if os.environ.get("GITHUB_EVENT_NAME") != "push" or ".." not in revision_range:
+        return revision_range
+
+    before, after = revision_range.split("..", maxsplit=1)
+    before_type = git_object_type(before)
+    if before_type is None:
+        print(
+            "WARNING: push before object is unavailable; scanning all history "
+            f"reachable from {after} instead. Unreachable rewritten history cannot "
+            "be verified by this checkout.",
+            file=sys.stderr,
+        )
+        return after
+    if before_type != "commit":
+        raise RuntimeError(
+            f"push before object {before!r} has unexpected type {before_type!r}"
+        )
+    return revision_range
 
 
 def changed_history_blobs(revision_range: str) -> list[tuple[str, bytes]]:
@@ -219,20 +341,99 @@ def shannon_entropy(value: str) -> float:
     return -sum((count / length) * math.log2(count / length) for count in counts.values())
 
 
+def signature_payload(value: str) -> str:
+    match = SIGNATURE_PREFIX_RE.match(value)
+    return value[match.end() :] if match else value
+
+
+def is_repeated_filler(value: str) -> bool:
+    compact = re.sub(r"[-_.]", "", value).lower()
+    return len(compact) >= 8 and len(set(compact)) == 1
+
+
+def is_local_demo_url(value: str) -> bool:
+    try:
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        if not parsed.scheme or hostname is None or parsed.password is None:
+            return False
+    except ValueError:
+        return False
+
+    hostname = hostname.lower().rstrip(".")
+    if hostname == "localhost":
+        is_local = True
+    else:
+        try:
+            is_local = ipaddress.ip_address(hostname).is_loopback
+        except ValueError:
+            is_local = False
+    if not is_local:
+        return False
+
+    decoded_user = unquote(parsed.username or "").lower()
+    decoded_pass = unquote(parsed.password).lower()
+    return (decoded_user, decoded_pass) in DEMO_LOCAL_CREDENTIALS
+
+
+def is_placeholder_phrase(value: str, markers: set[str]) -> bool:
+    segments = re.findall(r"[a-z0-9]+", value.lower())
+    return (
+        bool(segments)
+        and any(segment in markers for segment in segments)
+        and all(segment in PLACEHOLDER_SEGMENTS for segment in segments)
+    )
+
+
+def is_obvious_placeholder(value: str) -> bool:
+    stripped = value.strip()
+    normalized = stripped.lower()
+    if normalized in SAFE_VALUES or ENV_REFERENCE_RE.fullmatch(stripped):
+        return True
+    if is_local_demo_url(value):
+        return True
+
+    angle_match = ANGLE_VALUE_RE.fullmatch(stripped)
+    if angle_match and is_placeholder_phrase(
+        angle_match.group("inner"), ANGLE_PLACEHOLDER_MARKERS
+    ):
+        return True
+
+    payload = signature_payload(stripped)
+    if payload != stripped and is_repeated_filler(payload):
+        return True
+
+    return is_placeholder_phrase(payload, PLACEHOLDER_MARKERS)
+
+
 def looks_like_real_secret(value: str) -> bool:
-    normalized = value.lower()
-    if normalized in SAFE_VALUES:
+    if is_obvious_placeholder(value):
         return False
-    if len(set(value)) < 5:
+    stripped = value.strip()
+    angle_match = ANGLE_VALUE_RE.fullmatch(stripped)
+    candidate = angle_match.group("inner") if angle_match else stripped
+    # This helper is called only for values captured under secret-like keys by
+    # ASSIGNMENT_RE, where a long hexadecimal value is high-confidence even if
+    # its observed entropy is low by chance.
+    if HEX_SECRET_RE.fullmatch(candidate):
+        return True
+    if len(set(candidate)) < 5:
         return False
-    return shannon_entropy(value) >= 3.5
+    return shannon_entropy(candidate) >= 3.5
 
 
 def scan_line(line: str) -> list[str]:
     if ALLOW_MARKER in line.lower():
         return []
 
-    findings = [name for name, pattern in SIGNATURES if pattern.search(line)]
+    findings = [
+        name
+        for name, pattern in SIGNATURES
+        if any(
+            not is_obvious_placeholder(match.group(0))
+            for match in pattern.finditer(line)
+        )
+    ]
     for assignment in ASSIGNMENT_RE.finditer(line):
         value = next(
             group
@@ -277,6 +478,7 @@ def main() -> int:
 
     revision_range = event_revision_range()
     if revision_range:
+        revision_range = available_history_range(revision_range)
         for path, data in changed_history_blobs(revision_range):
             scan_content(path, data, findings)
 

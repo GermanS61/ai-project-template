@@ -23,6 +23,22 @@ HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 MARKDOWN_LINK_TEXT_RE = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
 
 
+class MarkdownEncodingError(Exception):
+    """A Markdown file could not be decoded as UTF-8."""
+
+    def __init__(self, path: Path, error: UnicodeDecodeError) -> None:
+        self.path = path
+        self.error = error
+        super().__init__(str(self))
+
+    def __str__(self) -> str:
+        try:
+            display_path = self.path.resolve().relative_to(ROOT.resolve()).as_posix()
+        except ValueError:
+            display_path = self.path.as_posix()
+        return f"{display_path}: is not valid UTF-8 ({self.error})"
+
+
 def markdown_files() -> list[Path]:
     result = subprocess.run(
         [
@@ -164,7 +180,20 @@ def anchors_in(text: str) -> set[str]:
 
 
 def anchors_for(path: Path) -> set[str]:
-    return anchors_in(path.read_text(encoding="utf-8"))
+    return anchors_in(read_markdown(path))
+
+
+def read_markdown(path: Path) -> str:
+    """Read UTF-8 Markdown while tolerating a BOM for parser diagnostics.
+
+    The repository text checker remains authoritative and rejects UTF-8 BOMs.
+    Stripping one here prevents a secondary, misleading missing-anchor error.
+    """
+
+    try:
+        return path.read_text(encoding="utf-8-sig")
+    except UnicodeDecodeError as error:
+        raise MarkdownEncodingError(path, error) from None
 
 
 def exact_path(path: Path) -> Path | None:
@@ -345,9 +374,13 @@ def reference_definitions(
             if content.startswith("["):
                 closing = find_closing_bracket(content, 0)
                 if closing is not None and content[closing + 1 :].startswith(":"):
-                    label = normalize_reference_label(content[1:closing])
+                    raw_label = content[1:closing]
+                    label = normalize_reference_label(raw_label)
                     target = parse_definition_destination(content[closing + 2 :])
-                    if label and target is not None:
+                    # GFM footnotes use [^label]: body. They are not reference
+                    # links. Do not mask their line: real inline links in the
+                    # footnote body still need validation.
+                    if label and not raw_label.startswith("^") and target is not None:
                         definitions.setdefault(label, target)
                         targets.append((line_number, target))
                         spans.append((offset, offset + len(raw_line)))
@@ -452,7 +485,15 @@ def validate_target(
             anchor_file = readme
 
     if fragment and anchor_file.suffix.lower() in {".md", ".markdown"}:
-        anchors = anchor_cache.setdefault(anchor_file, anchors_for(anchor_file))
+        try:
+            if anchor_file not in anchor_cache:
+                anchor_cache[anchor_file] = anchors_for(anchor_file)
+            anchors = anchor_cache[anchor_file]
+        except MarkdownEncodingError as error:
+            return (
+                f"{source.relative_to(ROOT).as_posix()}:{line_number}: "
+                f"cannot validate anchor {target}: {error}"
+            )
         if fragment not in anchors:
             return f"{source.relative_to(ROOT).as_posix()}:{line_number}: anchor does not exist: {target}"
 
@@ -466,7 +507,11 @@ def main() -> int:
     checked_targets = 0
 
     for source in files:
-        text = source.read_text(encoding="utf-8")
+        try:
+            text = read_markdown(source)
+        except MarkdownEncodingError as error:
+            errors.append(str(error))
+            continue
         targets, undefined_references = analyze_links(text)
         for line_number, target in targets:
             checked_targets += 1
