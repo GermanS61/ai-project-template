@@ -1,0 +1,49 @@
+name: Technical Proposal
+description: Предложить архитектурное улучшение, refactor или техническое изменение
+title: "[Proposal]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposal не является разрешением на реализацию. После отправки владелец проекта проведёт triage и назначит статус в GitHub Project.
+  - type: textarea
+    id: context
+    attributes:
+      label: Контекст / проблема
+      description: Какое техническое ограничение или риск существует сейчас?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Предлагаемое решение
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Польза
+      description: Что улучшится измеримо или практически?
+  - type: textarea
+    id: impact
+    attributes:
+      label: Architecture Impact
+      description: Contracts, dependencies, data, migrations, compatibility.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Альтернативы
+      description: Включая вариант ничего не менять.
+  - type: textarea
+    id: risks
+    attributes:
+      label: Риски / стоимость сопровождения
+  - type: textarea
+    id: decision_question
+    attributes:
+      label: Решение, которое нужно принять
+      description: Что именно должен решить владелец проекта по итогам рассмотрения?
+    validations:
+      required: true

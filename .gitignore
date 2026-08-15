@@ -1,0 +1,31 @@
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary / logs
+*.log
+*.tmp
+*.temp
+.cache/
+__pycache__/
+*.py[cod]
+
+# Local AI/tool scratch
+.tmp/
+tmp/

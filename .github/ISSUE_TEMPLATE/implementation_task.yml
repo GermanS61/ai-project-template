@@ -1,0 +1,74 @@
+name: Implementation Task
+description: Описать согласованную задачу реализации с проверяемым результатом
+title: "[Task]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Создавайте Implementation Task только для согласованной работы. После автоматического Triage ответственный проверяет задачу и вручную переводит её в Ready до начала реализации; выбор статуса в этой форме намеренно отсутствует.
+  - type: input
+    id: source
+    attributes:
+      label: Основание
+      description: Ссылка на Feature Request, Technical Proposal, Research / Spike или Bug со Status = Ready, либо на ADR или пункт PROJECT_PLAN.md.
+      placeholder: "#123 или ссылка на раздел плана"
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Stage
+      description: Этап из PROJECT_PLAN.md, к которому относится задача. Варианты ниже — baseline шаблона и должны быть синхронизированы при адаптации плана.
+      options:
+        - Stage 0 — Architecture / Bootstrap
+        - Stage 1 — Working Skeleton
+        - Stage 2 — Core Capability
+        - Stage 3 — First Valuable Module / MVP
+        - Stage 4 — Approved Integrations (if any)
+        - Stage 5 — Additional Approved Features
+        - Stage 6 — Hardening
+        - Stage 7 — Production Readiness
+        - Cross-stage / maintenance
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Что должно быть изменено в рамках этой задачи?
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Вне scope
+      description: Что сознательно не входит в задачу? Если исключений нет, укажите «Нет».
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Зависимости и блокеры
+      description: Связанные Issues/PR, внешние решения и порядок выполнения. Если зависимостей нет, укажите «Нет».
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Наблюдаемые условия, при которых задача считается выполненной.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Проверка
+      description: Команды или шаги проверки, ожидаемый результат и требуемые свидетельства.
+      placeholder: |
+        Команда/шаг: ...
+        Ожидаемый результат: ...
+    validations:
+      required: true
